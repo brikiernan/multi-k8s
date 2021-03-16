@@ -1,0 +1,14 @@
+FROM node:alpine
+
+WORKDIR /node
+
+COPY ./package*.json ./
+RUN mkdir app && chown -R node:node .
+USER node
+RUN npm install
+
+WORKDIR /node/app
+
+COPY --chown=node:node . .
+
+CMD ["npm", "start"]
