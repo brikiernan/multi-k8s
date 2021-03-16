@@ -6,9 +6,17 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: 'true'
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
 spec:
+  tls:
+    - hosts:
+        - listingops.com
+        - www.listingops.com
+      secretName: listingops-com
   rules:
-    - http:
+    - host: listingops.com
+      http:
         paths:
           - path: /?(.*)
             backend:
@@ -18,3 +26,14 @@ spec:
             backend:
               serviceName: server-cluster-ip-service
               servicePort: 5000
+    - host: www.listingops.com
+        http:
+          paths:
+            - path: /?(.*)
+              backend:
+                serviceName: client-cluster-ip-service
+                servicePort: 3000
+            - path: /api/?(.*)
+              backend:
+                serviceName: server-cluster-ip-service
+                servicePort: 5000
